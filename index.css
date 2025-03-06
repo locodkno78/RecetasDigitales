@@ -1,0 +1,58 @@
+@import url("https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&display=swap");
+
+:root {
+    --dark: #001233;
+    --white: #ffff;
+    --yellow: #ffb703;
+    --green: rgb(4, 68, 2);
+}
+
+body {
+    font-family: "Comfortaa", cursive;    
+}
+
+/* Header */
+header {    
+    padding: 10px 0;
+    background-color: #001233;
+}
+
+/* Tabla */
+.header {
+    margin-top: 5%;
+    padding: 10px 0;
+    display: flex;    
+    text-align: center;
+}
+
+/* Estilos generales para hacer que la tabla sea responsive */
+table {
+    margin-top: 5%;
+    margin-left: 5%;
+    max-width: 90%;  
+}
+.table-responsive {
+    overflow-x: auto;
+}
+
+thead{
+    text-align: center;
+    background-color: blue;
+    color: white;
+    font-style: italic;    
+    font-size: 25px;     
+}
+
+tbody{
+    text-align: center;
+    color:black;
+    font-style:initial;    
+    font-size: 25px;
+}
+
+td.pedido{
+    font-size: 30px;
+    padding-bottom: 5%;            
+}
+
+
