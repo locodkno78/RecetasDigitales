@@ -1,14 +1,15 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, addDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA9c3gBAo_ENpxC-reRiebauJXivjhP8D8",
-  authDomain: "base-de-datos-4c1cd.firebaseapp.com",
-  projectId: "base-de-datos-4c1cd",
-  storageBucket: "base-de-datos-4c1cd.appspot.com",
-  messagingSenderId: "452851254594",
-  appId: "1:452851254594:web:fda7e2f51a253e651134db"
+  apiKey: "AIzaSyCzCN_69meoMTP9mAL4yDJcXFVEA3Pq0dA",
+  authDomain: "clientes-26237.firebaseapp.com",
+  databaseURL: "https://clientes-26237-default-rtdb.firebaseio.com",
+  projectId: "clientes-26237",
+  storageBucket: "clientes-26237.appspot.com",
+  messagingSenderId: "320420249976",
+  appId: "1:320420249976:web:d2962562d9377241abc88d"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -17,22 +18,24 @@ const auth = getAuth(app);
 
 export const obtenerPedidos = async () => {
   try {
-    const querySnapshot = await getDocs(collection(db, 'pedidos'));
-    return querySnapshot;  // Devolver el querySnapshot
+    const querySnapshot = await getDocs(collection(db, 'recetas'));
+    const pedidos = [];
+
+    querySnapshot.forEach((doc) => {
+      pedidos.push({ id: doc.id, ...doc.data() });
+    });
+    return pedidos;
   } catch (error) {
     console.error('Error al obtener pedidos:', error);
-    throw error;  // Relanzar el error para que sea capturado en el llamador
+    throw error;
   }
 };
 
 // Función para actualizar el estado del pedido en la base de datos
-export const actualizarEstadoPedido = async (pedidoId, nuevoEstado) => {
-  console.log('Pedido ID:', pedidoId);
+export const actualizarEstadoPedido = async (pedidoId, nuevoEstado) => {  
   try {
-    const pedidoDocRef = doc(db, 'pedidos', pedidoId);
-    // Actualizar el campo 'usuario.estado' en el mapa
-    await updateDoc(pedidoDocRef, { 'usuario.estado': nuevoEstado });
-    console.log('Estado del pedido actualizado correctamente.');
+    const pedidoDocRef = doc(db, 'recetas', pedidoId);
+    await updateDoc(pedidoDocRef, { 'estado': nuevoEstado });    
   } catch (error) {
     console.error('Error al actualizar el estado del pedido:', error);
     throw error;
@@ -41,66 +44,59 @@ export const actualizarEstadoPedido = async (pedidoId, nuevoEstado) => {
 
 export const deletePedido = async (pedidoId) => {
   try {
-    const pedidoRef = doc(db, 'pedidos', pedidoId);
+    const pedidoRef = doc(db, 'recetas', pedidoId);
     await deleteDoc(pedidoRef);
-    console.log("Pedido eliminado correctamente desde Firestore");
   } catch (error) {
     console.error("Error al eliminar el pedido:", error);
-  }
-};
-
-export const getForm = async () => {
-  const querySnapshot = await getDocs(collection(db, 'productos'));
-  return querySnapshot;
-};
-
-
-export const saveForm = async (name, characteristics, quantity, size, price, imgURL, imgURL2) => {
-  try {
-    // Guardar los datos, incluyendo la URL de la imagen en Firestore
-    return addDoc(collection(db, 'productos'), { 
-      name, 
-      characteristics, 
-      quantity, 
-      size, 
-      price, 
-      img: imgURL, // Almacena la URL en lugar del archivo
-      img2: imgURL2
-
-    });
-  } catch (error) {
-    console.error("Error al guardar el formulario:", error);
     throw error;
   }
 };
 
-export const updateProduct = async (productId, newData) => {
-  const productRef = doc(db, "productos", productId);
-
-  try {
-    await updateDoc(productRef, newData);
-    console.log("Producto actualizado con éxito");
-  } catch (error) {
-    console.error("Error al actualizar el producto:", error);
-  }
-};
-
-export const deleteProduct = async (productId) => {
-  try {
-    const productRef = doc(db, 'productos', productId);
-    await deleteDoc(productRef);
-    console.log("Producto eliminado correctamente");
-  } catch (error) {
-    console.error("Error al eliminar el producto:", error);
-  }
-};
-
-export const getProduct = async () => {
-  const querySnapshot = await getDocs(collection(db, 'productos'));
+export const getRecetas = async () => {
+  const querySnapshot = await getDocs(collection(db, 'recetas'));
   return querySnapshot;
 };
 
+export const obtenerConsultas = async () => {
+  try {
+    const querySnapshot = await getDocs(collection(db, 'consultas'));
+    const consultas = [];
+
+    querySnapshot.forEach((doc) => {
+      consultas.push({ id: doc.id, ...doc.data() });
+    });
+    return consultas;
+  } catch (error) {
+    console.error('Error al obtener pedidos:', error);
+    throw error;
+  }
+};
+
+// Función para actualizar el estado del pedido en la base de datos
+export const actualizarEstadoConsulta = async (consultaId, nuevoEstado) => {  
+  try {
+    const consultaDocRef = doc(db, 'consultas', consultaId);
+    await updateDoc(consultaDocRef, { 'estado': nuevoEstado });    
+  } catch (error) {
+    console.error('Error al actualizar el estado de la consulta:', error);
+    throw error;
+  }
+};
+
+export const deleteConsulta = async (consultaId) => {
+  try {
+    const consultaRef = doc(db, 'consultas', consultaId);
+    await deleteDoc(consultaRef);
+  } catch (error) {
+    console.error("Error al eliminar la consulta:", error);
+    throw error;
+  }
+};
+
+export const getConsultas = async () => {
+  const querySnapshot = await getDocs(collection(db, 'consultas'));
+  return querySnapshot;
+};
+
+
 export { db, auth };
-
-
-
