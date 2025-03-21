@@ -123,7 +123,7 @@ document.querySelector("#logout").addEventListener("click", async (e) => {
     try {
         await signOut(auth);
         console.log('Usuario ha cerrado sesión');
-        window.location.replace("../login/login.html");
+        window.location.replace("../index.html");
     } catch (error) {
         console.log('Error al cerrar sesión:', error);
     }

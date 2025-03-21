@@ -1,136 +1,37 @@
-import { obtenerPedidos, actualizarEstadoPedido, deletePedido, auth } from "./firebase.js";
-import { signOut } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { auth } from "./firebase.js";
+import { showMessage } from "./home/showMessage.js";
 
-const tbody = document.getElementById('tbody');
+const signInForm = document.querySelector("#login-form");
 
-// Función para actualizar la tabla en el DOM
-function updateTable(pedidos) {
-    const columnNames = [
-        "Apellido",
-        "Nombre",
-        "Domicilio",
-        "Teléfono",
-        "Obra Social",
-        "Receta",
-        "Estado del pedido",
-        "Acciones"
-    ];
+signInForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  
+  // Obtener los valores de los campos  
+  const email = signInForm["email"].value;
+  const password = signInForm["password"].value;
 
-    let html = `
-        <thead>
-            <tr>${columnNames.map(columnName => `<th>${columnName}</th>`).join('')}</tr>
-        </thead>
-        <tbody>`;
+  // Verifica que los campos no estén vacíos
+  if (!email || !password) {
+    showMessage("Por favor, complete todos los campos.", "error");
+    return;
+  }
 
-    pedidos.forEach((pedido) => {
+  try {
+    // Iniciar sesión con correo electrónico y contraseña
+    const userCredentials = await signInWithEmailAndPassword(auth, email, password);
+    showMessage("Inicio de sesión exitoso", "success");  // Mostrar mensaje de éxito
+    console.log('Usuario autenticado:', userCredentials.user);
 
-        // Acceder a los campos directamente desde 'pedido'
-        const apellido = pedido.apellido || 'No disponible';
-        const nombre = pedido.nombre || 'No disponible';
-        const domicilio = pedido.domicilio || 'No disponible';
-        const telefono = pedido.telefono || 'No disponible';
-        const obraSocial = pedido.obraSocial || 'No disponible';
-        const estado = pedido.estado || 'Sin acción';
-        const receta = pedido.receta || 'No disponible';
-
-
-
-        html += `
-            <tr>
-                <td class="apellido table">${apellido}</td>
-                <td class="nombre table">${nombre}</td>
-                <td class="domicilio table">${domicilio}</td>
-                <td class="telefono table">${telefono}</td>
-                <td class="obraSocial table">${obraSocial}</td>
-                <td class="receta table">${receta}</td>                    
-                <td class="estado table" data-id="${pedido.id || ''}">${estado}</td>
-                <td class="table">
-                    <button type="button" class="btn btn-warning button-edit" data-bs-toggle="modal" data-id="${pedido.id}" data-bs-target="#modal" data-bs-placement="top" title="Estado del Pedido">
-                        <i class="fas fa-pencil-alt"></i>
-                    </button>
-                    <button type="button" class="btn btn-danger button-delete" data-id="${pedido.id}" data-bs-toggle="tooltip" data-bs-placement="top" title="Eliminar Pedido">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </td>
-            </tr>`;
-    });
-
-    html += `</tbody>`;
-    tbody.innerHTML = html;  // Agregar la tabla al DOM
-    agregarEventosBotones(); // Agregar eventos a los botones
-}
-
-// Función para cargar los pedidos en la tabla
-const cargarPedidosEnTabla = async () => {
-    try {
-        const pedidos = await obtenerPedidos();
-        if (pedidos && pedidos.length > 0) {
-            updateTable(pedidos); // Llenar la tabla con los pedidos
-        } else {
-            tbody.innerHTML = '<tr><td colspan="8" class="text-center">No hay pedidos disponibles.</td></tr>';
-        }
-    } catch (error) {
-        console.error("Error al cargar los pedidos:", error);
+    // Redirigir a index.html después del inicio de sesión exitoso
+    window.location.href = './home/home.html';  // Cambiar la URL para redirigir
+  } catch (error) {
+    if (error.code === "auth/wrong-password") {
+      showMessage("Contraseña incorrecta", "error");
+    } else if (error.code === "auth/user-not-found") {
+      showMessage("El correo electrónico es inválido", "error");
+    } else {
+      showMessage("Algo salió mal. Inténtelo de nuevo.", "error");
     }
-};
-
-// Función para agregar eventos a los botones de editar y eliminar
-function agregarEventosBotones() {
-    document.querySelectorAll('.button-edit').forEach(button => {
-        button.addEventListener('click', function () {
-            const pedidoId = this.getAttribute('data-id');
-            const pedidoEstado = document.querySelector(`.estado[data-id="${pedidoId}"]`).textContent;
-
-            document.getElementById('estadoPedido').value = pedidoEstado;
-            document.getElementById('editarEstadoForm').dataset.pedidoId = pedidoId;
-        });
-    });
-
-    document.querySelectorAll('.button-delete').forEach(button => {
-        button.addEventListener('click', async function () {
-            const pedidoId = this.getAttribute('data-id');
-            if (confirm("¿Seguro que deseas eliminar este pedido?")) {
-                try {
-                    await deletePedido(pedidoId);
-                    cargarPedidosEnTabla(); // Recargar la tabla después de eliminar
-                } catch (error) {
-                    console.error("Error al eliminar el pedido:", error);
-                }
-            }
-        });
-    });
-}
-
-// Evento para actualizar el estado del pedido
-document.getElementById('editarEstadoForm').addEventListener('submit', async function (event) {
-    event.preventDefault();
-
-    const pedidoId = this.dataset.pedidoId;
-    const nuevoEstado = document.getElementById('estadoPedido').value;
-
-    try {
-        await actualizarEstadoPedido(pedidoId, nuevoEstado);
-        cargarPedidosEnTabla(); // Recargar la tabla después de actualizar
-
-        // Cerrar modal
-        const editModal = document.getElementById("modal");
-        editModal.classList.remove("is-active");
-    } catch (error) {
-        console.error('Error al actualizar el estado del pedido:', error);
-    }
-});
-
-// Cargar pedidos al iniciar
-cargarPedidosEnTabla();
-
-// Cerrar sesión
-document.querySelector("#logout").addEventListener("click", async (e) => {
-    e.preventDefault();
-    try {
-        await signOut(auth);
-        console.log('Usuario ha cerrado sesión');
-        window.location.href = "./login/login.html";
-    } catch (error) {
-        console.log('Error al cerrar sesión:', error);
-    }
+  }
 });

@@ -14,24 +14,24 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" />
     <script src="https://use.fontawesome.com/releases/v5.0.7/js/all.js"></script>
     <script type="module" src="../firebase.js"></script>
-    <script type="module" src="./queries.js"></script>
-    <link rel="stylesheet" href="queries.css">
-    <title>CONSULTAS</title>
+    <script type="module" src="./home.js"></script>
+    <link rel="stylesheet" href="./home.css">
+    <title>RECETAS DIGITALES</title>
 </head>
 
 <body>
     <header>
         <nav class="navbar navbar-dark">
             <div class="container-fluid">
-                <span class="navbar-brand mb-4 h1">Consultas</span>
+                <span class="navbar-brand mb-4 h1">RECETAS DIGITALES</span>
                 <div>
-                    <button class="btn btn-warning" data-bs-toggle="tooltip" title="Home" type="button">
-                       <a href="../home/home.html"> <i class="bi bi-house">Home</i></a>
+                    <button class="btn btn-warning" data-bs-toggle="tooltip" title="Consultas" type="button">
+                        <a href="../queries/queries.html"><i class="bi bi-house">Consultas</i></a>
                     </button>
-                    <button class="btn btn-danger" data-bs-toggle="tooltip" title="Cerrar Sesión" type="button"
-                        id="logout">
+                    <button class="btn btn-danger" data-bs-toggle="tooltip" title="Cerrar Sesión" type="button" id="logout">
                         <i class="bi bi-box-arrow-right">Salir</i>
                     </button>
+                    
                 </div>
             </div>
         </nav>
@@ -44,14 +44,14 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Estado de la Consulta</h1>
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Estado del Pedido</h1>
                     <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="editarEstadoForm">
                         <div class="mb-3">
-                            <label for="estadoConsulta" class="form-label">Nuevo Estado</label>
-                            <input type="text" class="form-control" id="estadoConsulta"
+                            <label for="estadoPedido" class="form-label">Nuevo Estado</label>
+                            <input type="text" class="form-control" id="estadoPedido"
                                 placeholder="Ingrese el nuevo estado" required>
                         </div>
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
